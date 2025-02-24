@@ -2,7 +2,7 @@ import SideNav from "@/components/side-nav";
 import Header from "../header";
 import Map from '@/components/ui/Map';
 
-export default function Dashboard() {
+export default function Home() {
   return (
     <div>
       <Header />

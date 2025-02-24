@@ -2,7 +2,7 @@ import SideNav from "@/components/side-nav";
 import Header from "../header";
 import GridComponent from "@/components/GridComponent";
 
-export default function Incidents() {
+export default function Analytics() {
   return (
     <div>
       <Header />

@@ -17,7 +17,7 @@ export const LoginForm = () => {
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        router.push('/dashboard');
+        router.push('/home');
         
 
         // try {
