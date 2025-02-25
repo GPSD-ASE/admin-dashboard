@@ -1,6 +1,8 @@
 import SideNav from "@/components/side-nav";
 import Header from "../header";
-import Map from '@/components/ui/Map';
+import Map from './Map';
+import { IncidentForm } from "./incidentForm";
+import "@/styles/mobileClient.css"
 
 export default function MobileClient() {
   return (
@@ -13,8 +15,12 @@ export default function MobileClient() {
             <div className="w-full flex justify-center mx-auto   overflow-auto h-[calc(100vh - 120px)] overflow-y-auto relative">
               <div className='flex gap-2 pt-3'>
                 <div className="flex gap-4">
+                  <div className="map">
                     <Map></Map>
-
+                  </div>
+                  <div className="incident-form">
+                    <IncidentForm />
+                  </div>
                 </div>
               </div>
             </div>
