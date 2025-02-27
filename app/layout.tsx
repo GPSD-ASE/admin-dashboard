@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/sonner"
 import "ol/ol.css";
 import '../styles/globals.css';
 
-import { StoreProvider } from './StoreProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,9 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <StoreProvider>{children}</StoreProvider>
-        <Toaster />
+      <body className={inter.className}>{children}        <Toaster />
       </body>
     </html>
   );

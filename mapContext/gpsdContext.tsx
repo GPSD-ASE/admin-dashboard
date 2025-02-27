@@ -19,10 +19,10 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
 
 
     return (
-        <MapContext.Provider value={{ markedIncidentVectorSource, markedRoutesVectorSource,incidentType, setMarkedIncidentVectorSource, setMarkedRoutesVectorSource, setIncidentType }}>
+        <MapContext.Provider value={{ markedIncidentVectorSource, markedRoutesVectorSource, incidentType, setMarkedIncidentVectorSource, setMarkedRoutesVectorSource, setIncidentType }}>
             {children}
         </MapContext.Provider>
-    );
+    )
 };
 
 export const useMap = () => {
