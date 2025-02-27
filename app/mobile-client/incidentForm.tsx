@@ -2,7 +2,6 @@
 
 import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
 import { toast } from "sonner"
 
 import {
@@ -21,10 +20,12 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { API_CONSTANTS } from '@/constants/ApiConstants'
+import { useMap } from '@/mapContext/gpsdContext'
+
 
 export const IncidentForm = () => {
-    const [incidentType, setIncidentType] = useState('')
 
+    const { markedIncidentVectorSource, markedRoutesVectorSource, incidentType, setIncidentType } = useMap();
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -32,10 +33,10 @@ export const IncidentForm = () => {
         let incidentStatus = 1;
         let severityLevel = 3;
         let userId = 141235;
-        let latitude = 53.344250;
-        let longitude = -6.262410;
+        let latitude = markedIncidentVectorSource[1];
+        let longitude = markedIncidentVectorSource[0];
 
-        if(incidentType === ''){
+        if (incidentType === '') {
             toast.error('Please select an incident type');
         } else {
             try {
@@ -62,7 +63,11 @@ export const IncidentForm = () => {
                 toast.error(error?.message)
             }
         }
-        
+
+    }
+
+    const checkIncidentReportSubmission = () => {
+        return incidentType === '' || markedIncidentVectorSource.length == 0;
     }
 
     return (
@@ -86,7 +91,7 @@ export const IncidentForm = () => {
                             <SelectItem value="5">Chemical Leak</SelectItem>
                         </SelectContent>
                     </Select>
-                    <Button disabled={incidentType === ''}>Report</Button>
+                    <Button disabled={checkIncidentReportSubmission()}>Report</Button>
                 </form>
             </CardContent>
         </Card>

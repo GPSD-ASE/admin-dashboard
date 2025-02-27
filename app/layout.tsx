@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Toaster } from "@/components/ui/sonner"
 import "ol/ol.css";
-
 import '../styles/globals.css';
 
 import { StoreProvider } from './StoreProvider';

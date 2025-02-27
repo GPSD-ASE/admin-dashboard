@@ -1,11 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { userSlice } from './features/user/userSlice'
+import { mapInteractionSlice } from './features/map_interaction/mapInteractionSlice';
+
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-        user: userSlice.reducer,
-    }
+      user: userSlice.reducer,
+      mapInteraction: mapInteractionSlice.reducer
+    },
   })
 }
 
