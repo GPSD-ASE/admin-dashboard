@@ -139,31 +139,33 @@ function Map() {
         });
 
     
-   
-        incidentlocations.forEach(loc => {
-          const pointCoords = fromLonLat([loc.longitude, loc.latitude]);
+        if(incidentlocations !== null){
+            incidentlocations.forEach(loc => {
+                const pointCoords = fromLonLat([loc.longitude, loc.latitude]);
+      
+          
+                // Create a marker
+                const markerFeature = new Feature({ geometry: new Point(pointCoords) });
+                markerFeature.setStyle(
+                  new Style({
+                    image: new Circle({
+                      radius: 8,
+                      fill: new Fill({ color: "black" }),
+                      stroke: new Stroke({ color: "white", width: 2 }),
+                  }),
+                  })
+                );
+          
+                incidentmarkerSource.addFeature(markerFeature);
+          
+              //   const radiusInMeters = loc.radius * 1000; // Convert km to meters
+                const circleFeature = new Feature(new CircleGeom(pointCoords, loc.radius));
+          
+                circleSource.addFeature(circleFeature);
+          
+              });
+        }
 
-    
-          // Create a marker
-          const markerFeature = new Feature({ geometry: new Point(pointCoords) });
-          markerFeature.setStyle(
-            new Style({
-              image: new Circle({
-                radius: 8,
-                fill: new Fill({ color: "black" }),
-                stroke: new Stroke({ color: "white", width: 2 }),
-            }),
-            })
-          );
-    
-          incidentmarkerSource.addFeature(markerFeature);
-    
-        //   const radiusInMeters = loc.radius * 1000; // Convert km to meters
-          const circleFeature = new Feature(new CircleGeom(pointCoords, loc.radius));
-    
-          circleSource.addFeature(circleFeature);
-    
-        });
     
         // Get user location
         if ("geolocation" in navigator) {
@@ -291,6 +293,7 @@ function Map() {
             let response = await res.json()
             if (res.ok) {
                 setIncidentLocations(response);
+                // getIncidentZones();
             } else {
                 toast.error(response.error);
             }

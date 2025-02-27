@@ -32,7 +32,7 @@ export const IncidentForm = () => {
         console.log('Incident type:', incidentType)
         let incidentStatus = 1;
         let severityLevel = 3;
-        let userId = 141235;
+        let userId = localStorage.getItem('userId');
         let latitude = markedIncidentVectorSource[1];
         let longitude = markedIncidentVectorSource[0];
 

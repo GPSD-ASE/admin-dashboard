@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { API_CONSTANTS } from '@/constants/ApiConstants'
+import { toast } from 'sonner'
 
 
 export const RegisterForm = () => {
@@ -17,31 +19,33 @@ export const RegisterForm = () => {
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        let profileURL = 'https://ui-avatars.com/api/?name=' + username;
-        router.push('/dashboard');
+        
         
 
-        // try {
-        //     const res = await fetch('/api/register', {
-        //         method: 'POST',
-        //         body: JSON.stringify({
-        //             username,
-        //             password,
-        //             paymentPlan,
-        //             profileURL
-        //         }),
-        //         headers: {
-        //             'Content-Type': 'application/json'
-        //         }
-        //     })
-        //     if (res.ok) {
-        //         redirect('/login');
-        //     } else {
-        //         setError((await res.json()).error)
-        //     }
-        // } catch (error: any) {
-        //     setError(error?.message)
-        // }
+        try {
+            const res = await fetch(API_CONSTANTS.REGISTER, {
+                method: 'POST',
+                body: JSON.stringify({
+                    username: username,
+                    password,
+                    email: username + '@gmail.com',
+                    deviceID: '2',
+                    role: '2'
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            if (res.ok) {
+                toast.success('Registration Successful')
+                router.push('/login');
+            } else {
+
+                toast.success('Registration Failed')
+            }
+        } catch (error: any) {
+            setError(error?.message)
+        }
     }
 
     return (
