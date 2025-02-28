@@ -29,7 +29,6 @@ export const IncidentForm = () => {
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        console.log('Incident type:', incidentType)
         let incidentStatus = 1;
         let severityLevel = 3;
         let userId = localStorage.getItem('userId');

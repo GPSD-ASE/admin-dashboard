@@ -26,7 +26,7 @@ export const RegisterForm = () => {
             const res = await fetch(API_CONSTANTS.REGISTER, {
                 method: 'POST',
                 body: JSON.stringify({
-                    username: username,
+                    name: username,
                     password,
                     email: username + '@gmail.com',
                     deviceID: '2',
@@ -71,7 +71,6 @@ export const RegisterForm = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     id="password"
                     type="password"
-                    maxLength={5}
                 />
             </div>
             {error && <Alert>{error}</Alert>}

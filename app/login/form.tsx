@@ -36,7 +36,6 @@ export const LoginForm = () => {
             })
             let response = await res.json();
             if (res.ok) {
-                console.log(response);
                 login(response.user.name);
                 setCookie('Token', response.token);
                 localStorage.setItem("userId", response.user.id);
