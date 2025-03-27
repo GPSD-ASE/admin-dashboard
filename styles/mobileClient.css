@@ -1,0 +1,18 @@
+.main-grid-container {
+    display: grid;
+    grid-template-areas: 'map incident-form' 'map incident-form';
+    grid-template-rows: 7%;
+    grid-template-columns: 75% auto;
+}
+
+.incident-form {
+    grid-area: incident-form;
+}
+
+.map {
+    grid-area: map;
+}
+
+.route-form {
+    grid-area: route-form;
+}

@@ -18,6 +18,10 @@ body {
   width: 60vw;
 }
 
+.login-form-height {
+  height: 90vh;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -76,7 +80,7 @@ body {
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;

@@ -79,12 +79,14 @@ interface IncidentLocation {
 
 function Map() {
     const mapRef = useRef(null);
+    const [selectedMarker, setSelectedMarker] = useState<MarkerType>("markIncident");
     const [vectorSource] = useState(new VectorSource());
     const [routeSource] = useState(new VectorSource());
     const [routeLine, setRouteLine] = useState([]);
     const [incidentlocations, setIncidentLocations] = useState<IncidentLocation[]>([]);
 
 
+    const { markedIncidentVectorSource, markedRoutesVectorSource, incidentType, setMarkedIncidentVectorSource, setMarkedRoutesVectorSource } = useMap();
 
     useEffect(() => {
         getIncidentZones();
@@ -137,31 +139,33 @@ function Map() {
         });
 
     
-   
-        incidentlocations.forEach(loc => {
-          const pointCoords = fromLonLat([loc.longitude, loc.latitude]);
+        if(incidentlocations !== null){
+            incidentlocations.forEach(loc => {
+                const pointCoords = fromLonLat([loc.longitude, loc.latitude]);
+      
+          
+                // Create a marker
+                const markerFeature = new Feature({ geometry: new Point(pointCoords) });
+                markerFeature.setStyle(
+                  new Style({
+                    image: new Circle({
+                      radius: 8,
+                      fill: new Fill({ color: "black" }),
+                      stroke: new Stroke({ color: "white", width: 2 }),
+                  }),
+                  })
+                );
+          
+                incidentmarkerSource.addFeature(markerFeature);
+          
+              //   const radiusInMeters = loc.radius * 1000; // Convert km to meters
+                const circleFeature = new Feature(new CircleGeom(pointCoords, loc.radius));
+          
+                circleSource.addFeature(circleFeature);
+          
+              });
+        }
 
-    
-          // Create a marker
-          const markerFeature = new Feature({ geometry: new Point(pointCoords) });
-          markerFeature.setStyle(
-            new Style({
-              image: new Circle({
-                radius: 8,
-                fill: new Fill({ color: "black" }),
-                stroke: new Stroke({ color: "white", width: 2 }),
-            }),
-            })
-          );
-    
-          incidentmarkerSource.addFeature(markerFeature);
-    
-        //   const radiusInMeters = loc.radius * 1000; // Convert km to meters
-          const circleFeature = new Feature(new CircleGeom(pointCoords, loc.radius));
-    
-          circleSource.addFeature(circleFeature);
-    
-        });
     
         // Get user location
         if ("geolocation" in navigator) {
@@ -208,7 +212,25 @@ function Map() {
                 geometry: new Point(coordinates),
             });
             let coord = toLonLat(coordinates);
+            if (selectedMarker === "markIncident") {
+                if (markedIncidentVectorSource.length == 0) {
+                    newMarker.setStyle(markerStyles[selectedMarker]);
+                    setMarkedIncidentVectorSource(coord);
+                    vectorSource.addFeature(newMarker);
+                } else {
+                    toast.error("Cannot select more than one incident on the map")
+                }
 
+            } else if (selectedMarker === "markRoute") {
+                // setMarkedRoutesVectorSource()
+                if (markedRoutesVectorSource.length <= 1) {
+                    newMarker.setStyle(markerStyles[selectedMarker]);
+                    vectorSource.addFeature(newMarker);
+                    setMarkedRoutesVectorSource([...markedRoutesVectorSource, coord]);
+                } else {
+                    toast.error("Cannot select more than two points on the map")
+                }
+            }
 
         });
 
@@ -220,6 +242,8 @@ function Map() {
         selectInteraction.on("select", (event) => {
             event.selected.forEach((feature) => {
                 vectorSource.removeFeature(feature);
+                setMarkedIncidentVectorSource([]);
+                setMarkedRoutesVectorSource([]);
             });
         });
 
@@ -239,7 +263,7 @@ function Map() {
         map.addControl(new FullScreen({}));
 
         return () => map.setTarget(null!);
-    }, [vectorSource, routeLine, incidentlocations]);
+    }, [vectorSource, selectedMarker, markedIncidentVectorSource, markedRoutesVectorSource, routeLine, incidentlocations]);
 
     const reorderCoordinates = (originalArray: any, indexesArray: any = [1, 0]) => {
         return indexesArray.map((index: any) => originalArray[index]);
@@ -269,6 +293,53 @@ function Map() {
             let response = await res.json()
             if (res.ok) {
                 setIncidentLocations(response);
+                // getIncidentZones();
+            } else {
+                toast.error(response.error);
+            }
+        } catch (error: any) {
+            toast.error(error?.message)
+        }
+    }
+
+    const getRoute = async () => {
+        try {
+            let origin = reorderCoordinates(markedRoutesVectorSource[0]).toString();
+            let dest = reorderCoordinates(markedRoutesVectorSource[1]).toString();
+            let url = addParamsToUrl(API_CONSTANTS.GET_ROUTE, { 'origin': origin, 'destination': dest });
+            const res = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            let response = await res.json()
+            if (res.ok) {
+                setRouteLine(response.paths[0].points.coordinates);
+                toast.success('Route Retrieved Successfully');
+            } else {
+                toast.error("No Route Available");
+            }
+        } catch (error: any) {
+            toast.error(error?.message)
+        }
+    }
+
+    const getEvacuationRoute = async () => {
+        try {
+            let danger = reorderCoordinates(markedIncidentVectorSource);
+            const res = await fetch(API_CONSTANTS.CALC_EVACUATION, {
+                method: 'POST',
+                body: JSON.stringify({
+                    DangerPoint: danger,
+                    IncidentTypeID: incidentType,
+                    SafePoint: []
+                }),
+            })
+            let response = await res.json()
+            if (res.ok) {
+                setRouteLine(response.paths[0].points.coordinates);
+                toast.success('Evacuation Plan Retrieved Successfully');
             } else {
                 toast.error(response.error);
             }
@@ -279,7 +350,7 @@ function Map() {
 
     return (<>
         <div className="flex flex-row gap-4">
-            {/* <Card className="w-[360px] h-[170px]">
+            <Card className="w-[360px] h-[170px]">
                 <CardHeader>
                     <CardTitle>Interact with Map</CardTitle>
                     <CardDescription>Please select the interaction type with the Map</CardDescription>
@@ -314,10 +385,10 @@ function Map() {
                 <CardContent>
                     <Button disabled={markedIncidentVectorSource.length == 0 || incidentType === ''} onClick={getEvacuationRoute}>Get Evacuation Plan</Button>
                 </CardContent>
-            </Card> */}
+            </Card>
 
         </div>
-        <div ref={mapRef} style={{ width: "70vw", height: "90vh", marginTop: "10px" }} />
+        <div ref={mapRef} style={{ width: "65.5vw", height: "70vh", marginTop: "10px" }} />
     </>
     );
 }

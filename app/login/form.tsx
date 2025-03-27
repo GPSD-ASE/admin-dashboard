@@ -6,41 +6,46 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-
+import { API_CONSTANTS } from '@/constants/ApiConstants'
+import { setCookie } from "cookies-next";
+import { useAuth } from '@/authContext/authContext'
 
 export const LoginForm = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null)
+    const { login } = useAuth();
+
 
     const router = useRouter();
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        router.push('/dashboard');
         
 
-        // try {
-        //     const res = await fetch('/api/register', {
-        //         method: 'POST',
-        //         body: JSON.stringify({
-        //             username,
-        //             password,
-        //             paymentPlan,
-        //             profileURL
-        //         }),
-        //         headers: {
-        //             'Content-Type': 'application/json'
-        //         }
-        //     })
-        //     if (res.ok) {
-        //         redirect('/login');
-        //     } else {
-        //         setError((await res.json()).error)
-        //     }
-        // } catch (error: any) {
-        //     setError(error?.message)
-        // }
+        try {
+            const res = await fetch(API_CONSTANTS.LOGIN, {
+                method: 'POST',
+                body: JSON.stringify({
+                    username,
+                    password
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            let response = await res.json();
+            if (res.ok) {
+                login(response.user.name);
+                setCookie('Token', response.token);
+                localStorage.setItem("userId", response.user.id);
+                router.push('/home');
+            } else {
+                setError((await res.json()).error)
+            }
+        } catch (error: any) {
+            setError(error?.message)
+        }
     }
 
     return (

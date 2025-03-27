@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 
 import Link from 'next/link';
 import gpsd_logo from '../public/gpsd_logo.png';
+import { deleteCookie } from "cookies-next";
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -18,10 +19,23 @@ import {
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { NavItems } from '@/config';
 import { Menu } from 'lucide-react';
+import { useAuth } from '@/authContext/authContext';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const navItems = NavItems();
   const [isOpen, setIsOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+
+  const logoutAccount = () => {
+    logout();
+    localStorage.removeItem('userId');
+    deleteCookie('Token');
+    router.push('/login');
+
+  }
 
   return (
     <header className="flex items-center h-16 px-4 border-b shrink-0 md:px-6 justify-between">
@@ -31,16 +45,16 @@ export default function Header() {
         prefetch={false}
       >
         <Avatar>
-                <AvatarImage
-                  src={gpsd_logo.src}
-                  alt="@shadcn"
-                />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
+          <AvatarImage
+            src={gpsd_logo.src}
+            alt="@shadcn"
+          />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
         <span>GPSD</span>
       </Link>
       <div>
-        Hi! <span>👋</span> User
+        Hi! <span>👋</span> {user}
       </div>
 
       <div className="ml-4 flex items-center gap-3">
@@ -53,15 +67,15 @@ export default function Header() {
             >
               <Avatar>
                 <AvatarImage
-                  src="https://github.com/shadcn.png"
+                  src={`https://ui-avatars.com/api/?name=` + user}
                   alt="User"
                 />
-                <AvatarFallback>CN</AvatarFallback>
+                <AvatarFallback>{user}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>Logout</DropdownMenuItem>
+            <DropdownMenuItem onClick={logoutAccount}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -77,11 +91,10 @@ export default function Header() {
                   key={idx}
                   href={navItem.href}
                   onClick={() => setIsOpen(false)}
-                  className={`h-full relative flex items-center whitespace-nowrap rounded-md ${
-                    navItem.active
+                  className={`h-full relative flex items-center whitespace-nowrap rounded-md ${navItem.active
                       ? 'font-base text-sm bg-neutral-200 shadow-sm text-neutral-700 dark:bg-neutral-800 dark:text-white'
                       : 'hover:bg-neutral-200  hover:text-neutral-700 text-neutral-500 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white'
-                  }`}
+                    }`}
                 >
                   <div className="relative font-base text-sm py-1.5 px-2 flex flex-row items-center space-x-2 rounded-md duration-100">
                     {navItem.icon}

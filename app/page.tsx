@@ -1,6 +1,5 @@
-import PagePlaceholder from '@/components/page-placeholder';
-import Dashboard from './dashboard/page';
+import Home from './home/page';
 
-export default function Home() {
-  return <Dashboard />;
+export default function App() {
+  return <Home />;
 }
