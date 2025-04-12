@@ -17,20 +17,6 @@ export const NavItems = () => {
       active: isNavItemActive(pathname, '/home'),
       position: 'top',
     },
-    // {
-    //   name: 'Profile',
-    //   href: '/profile',
-    //   icon: <User size={20} />,
-    //   active: isNavItemActive(pathname, '/profile'),
-    //   position: 'top',
-    // },
-    // {
-    //   name: 'Notifications',
-    //   href: '/notifications',
-    //   icon: <Bell size={20} />,
-    //   active: isNavItemActive(pathname, '/notifications'),
-    //   position: 'top',
-    // },
     {
       name: 'Analytics',
       href: '/analytics',
@@ -45,13 +31,13 @@ export const NavItems = () => {
       active: isNavItemActive(pathname, '/incidents'),
       position: 'top',
     },
-    {
-      name: 'Client (demo)',
-      href: '/mobile-client',
-      icon: <PhoneIcon size={20} />,
-      active: isNavItemActive(pathname, '/mobile-client'),
-      position: 'top',
-    },
+    // {
+    //   name: 'Client (demo)',
+    //   href: '/mobile-client',
+    //   icon: <PhoneIcon size={20} />,
+    //   active: isNavItemActive(pathname, '/mobile-client'),
+    //   position: 'top',
+    // },
 
   ];
 };

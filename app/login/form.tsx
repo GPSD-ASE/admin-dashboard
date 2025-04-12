@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { API_CONSTANTS } from '@/constants/ApiConstants'
 import { setCookie } from "cookies-next";
 import { useAuth } from '@/authContext/authContext'
+import { toast } from 'sonner'
 
 export const LoginForm = () => {
     const [username, setUsername] = useState('')
@@ -27,8 +28,8 @@ export const LoginForm = () => {
             const res = await fetch(API_CONSTANTS.LOGIN, {
                 method: 'POST',
                 body: JSON.stringify({
-                    username,
-                    password
+                    username: username,
+                    password: password
                 }),
                 headers: {
                     'Content-Type': 'application/json'
@@ -36,15 +37,16 @@ export const LoginForm = () => {
             })
             let response = await res.json();
             if (res.ok) {
-                login(response.user.name);
+                login(response.user.username);
                 setCookie('Token', response.token);
                 localStorage.setItem("userId", response.user.id);
+                toast.success(response.message);
                 router.push('/home');
             } else {
-                setError((await res.json()).error)
+                setError(response.error)
             }
         } catch (error: any) {
-            setError(error?.message)
+            setError(error?.error)
         }
     }
 

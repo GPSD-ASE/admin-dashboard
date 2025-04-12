@@ -83,6 +83,7 @@ function Map() {
     const [vectorSource] = useState(new VectorSource());
     const [routeSource] = useState(new VectorSource());
     const [routeLine, setRouteLine] = useState([]);
+    const [safeZones, setSafeZones] = useState<any[]>([]);
     const [incidentlocations, setIncidentLocations] = useState<IncidentLocation[]>([]);
 
 
@@ -90,6 +91,7 @@ function Map() {
 
     useEffect(() => {
         getIncidentZones();
+        getSafeZones();
         }, []);
 
 
@@ -287,7 +289,8 @@ function Map() {
             const res = await fetch(API_CONSTANTS.GET_ZONES, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + getCookie('Token')
                 }
             })
             let response = await res.json()
@@ -302,6 +305,33 @@ function Map() {
         }
     }
 
+    const getSafeZones = async () => {
+        try {
+            const res = await fetch(API_CONSTANTS.SAFEZONES, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + getCookie('Token')
+                }
+            })
+            let response = await res.json()
+            if (res.ok) {
+                setSafeZones(response);
+                // getIncidentZones();
+            } else {
+                toast.error(response.error);
+            }
+        } catch (error: any) {
+            toast.error(error?.message)
+        }
+    }
+
+    const getCookie = (name: any) => {
+        const value = `; ${document.cookie}`;
+        const parts: any = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+      }
+
     const getRoute = async () => {
         try {
             let origin = reorderCoordinates(markedRoutesVectorSource[0]).toString();
@@ -310,7 +340,8 @@ function Map() {
             const res = await fetch(url, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + getCookie('Token')
                 }
             })
             let response = await res.json()
@@ -330,10 +361,14 @@ function Map() {
             let danger = reorderCoordinates(markedIncidentVectorSource);
             const res = await fetch(API_CONSTANTS.CALC_EVACUATION, {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + getCookie('Token')
+                },
                 body: JSON.stringify({
                     DangerPoint: danger,
                     IncidentTypeID: incidentType,
-                    SafePoint: []
+                    SafePoint: [],
                 }),
             })
             let response = await res.json()

@@ -13,6 +13,7 @@ import { toast } from 'sonner'
 export const RegisterForm = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [email, setEmail] = useState('');
     const [error, setError] = useState<string | null>(null)
 
     const router = useRouter();
@@ -26,11 +27,9 @@ export const RegisterForm = () => {
             const res = await fetch(API_CONSTANTS.REGISTER, {
                 method: 'POST',
                 body: JSON.stringify({
-                    name: username,
+                    username: username,
                     password,
-                    email: username + '@gmail.com',
-                    deviceID: '2',
-                    role: '2'
+                    email: email,
                 }),
                 headers: {
                     'Content-Type': 'application/json'
@@ -44,7 +43,7 @@ export const RegisterForm = () => {
                 toast.success('Registration Failed')
             }
         } catch (error: any) {
-            setError(error?.message)
+            setError(error)
         }
     }
 
@@ -59,6 +58,18 @@ export const RegisterForm = () => {
                     onChange={(e) => setUsername(e.target.value)}
                     id="username"
                     type="username"
+                    maxLength={20}
+                />
+            </div>
+            <div className="grid w-full items-center gap-1.5">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                    className="w-full"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    id="email"
+                    type="email"
                     maxLength={20}
                 />
             </div>
