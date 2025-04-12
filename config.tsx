@@ -17,13 +17,13 @@ export const NavItems = () => {
       active: isNavItemActive(pathname, '/home'),
       position: 'top',
     },
-    {
-      name: 'Analytics',
-      href: '/analytics',
-      icon: <ChartNoAxesCombinedIcon size={20} />,
-      active: isNavItemActive(pathname, '/analytics'),
-      position: 'top',
-    },
+    // {
+    //   name: 'Analytics',
+    //   href: '/analytics',
+    //   icon: <ChartNoAxesCombinedIcon size={20} />,
+    //   active: isNavItemActive(pathname, '/analytics'),
+    //   position: 'top',
+    // },
     {
       name: 'Incidents',
       href: '/incidents',
