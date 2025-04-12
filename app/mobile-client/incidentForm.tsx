@@ -27,6 +27,12 @@ export const IncidentForm = () => {
 
     const { markedIncidentVectorSource, markedRoutesVectorSource, incidentType, setIncidentType } = useMap();
 
+    const getCookie = (name: any) => {
+        const value = `; ${document.cookie}`;
+        const parts: any = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+      }
+
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         let incidentStatus = 1;
@@ -50,7 +56,8 @@ export const IncidentForm = () => {
                         incidentStatusId: incidentStatus,
                     }),
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getCookie('Token')
                     }
                 })
                 if (res.ok) {

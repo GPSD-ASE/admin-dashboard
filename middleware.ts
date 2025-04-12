@@ -3,38 +3,53 @@ import type { NextRequest } from "next/server";
 import { NextURL } from "next/dist/server/web/next-url";
 import { API_CONSTANTS } from "./constants/ApiConstants";
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
     const encryptedToken = req.cookies.get("Token")?.value || "";
-
     const { pathname, origin } = req.nextUrl;
-    let isTokenValid: boolean = true;
-    checkValidity(encryptedToken).then((response: boolean) => {
-        isTokenValid = response;
-    });
-    if (!isTokenValid) {
-        if (pathname === "/home" || pathname === "/incidents" || pathname === "/" || pathname === "/analytics" || pathname === "/mobile-client") {
-            const loginURL = new NextURL("/login", origin);
-            return NextResponse.redirect(loginURL);
-        }
-    } else {
-        if (pathname === "/login" || pathname === "/register") {
-            const homeURL = new NextURL("/home", origin);
-            return NextResponse.redirect(homeURL);
-        }
+    const isTokenValid = await checkValidity(encryptedToken); 
+    const requestHeaders = new Headers(req.headers);
+
+    if (isTokenValid) {
+        requestHeaders.set("Authorization", `Bearer ${encryptedToken}`);
     }
-    return NextResponse.next();
+
+    let response = NextResponse.next({
+        request: {
+            headers: requestHeaders,
+        },
+    });
+    if (
+        !isTokenValid &&
+        ["/home", "/incidents", "/", "/analytics"].includes(pathname)
+    ) {
+        const loginURL = req.nextUrl.clone();
+        loginURL.pathname = "/login";
+        return NextResponse.redirect(loginURL);
+    }
+
+    if (
+        isTokenValid &&
+        ["/login", "/register"].includes(pathname)
+    ) {
+        const homeURL = req.nextUrl.clone();
+        homeURL.pathname = "/home";
+        return NextResponse.redirect(homeURL);
+    }
+
+    return response;
 }
 
 const checkValidity = async (encryptedToken: string) => {
 
         const res = await fetch(API_CONSTANTS.VERIFY_USER, {
-            method: 'POST',
+            method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + encryptedToken
             }
         })
         let response = await res.json();
-        if (res.ok) {
+        if (response.message == 'valid token') {
             return true;
         } else {
             return false;
@@ -48,6 +63,8 @@ export const config = {
         "/home",
         "/incidents",
         "/analytics",
-        "/mobile-client"
+        "/mobile-client",
+        "/login",
+        "/register"
     ],
 };

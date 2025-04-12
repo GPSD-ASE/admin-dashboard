@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 import gpsd_logo from '../public/gpsd_logo.png';
@@ -21,12 +21,47 @@ import { NavItems } from '@/config';
 import { Menu } from 'lucide-react';
 import { useAuth } from '@/authContext/authContext';
 import { useRouter } from 'next/navigation';
+import { API_CONSTANTS } from '@/constants/ApiConstants';
 
 export default function Header() {
   const navItems = NavItems();
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, login } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    fetchData().then((value: any) => {
+    })
+
+  }, [])
+
+  const getCookie = (name: any) => {
+    const value = `; ${document.cookie}`;
+    const parts: any = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  const fetchData = async () => {
+    let userId: any;
+    if (typeof window !== "undefined") {
+      userId = window.localStorage.getItem('userId') || '';
+    }
+    let url = API_CONSTANTS.GET_USER + userId;
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer '+ getCookie('Token')
+      }
+    })
+    let response = await res.json();
+    if (response.id == userId) {
+      let userData = response;
+      login(userData?.username || '');
+    } else {
+      logoutAccount();
+    }
+  }
 
 
   const logoutAccount = () => {
