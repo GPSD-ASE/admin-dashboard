@@ -558,7 +558,18 @@ function Map() {
                         </form>
                     </CardContent>
                 </Card>
-
+                <Card className="w-[360px] h-[230px]">
+                    <CardHeader>
+                        <CardTitle>Map Legend</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ul>
+                            <li>Green circle in the map shows the safe zones.</li>
+                            <li>Black circle specifies the incident location.</li>
+                            <li>Click on any of the markers to view their information.</li>
+                        </ul>
+                    </CardContent>
+                </Card>
             </div>
         </div>
     </>
