@@ -89,17 +89,29 @@ interface IncidentLocation {
     longitude: number;
     latitude: number;
     radius: number; // Radius in kilometers
+    incidentType?: any,
+    incidentStatus?: any,
+    geoName?: any,
+    severityLevel?: any,
+    injuredCount?: any,
+    affectedCount?: any
 
 }
 
+interface SafeZone {
+    zone_name: string,
+    incident_type_id: any,
+    zone_lat: any,
+    zone_lon: any
+}
 function Map() {
     const mapRef = useRef(null);
     const [selectedMarker, setSelectedMarker] = useState<MarkerType>("NoSelection");
     const [vectorSource] = useState(new VectorSource());
     const [routeSource] = useState(new VectorSource());
     const [popupVisible, setPopupVisible] = useState(false);
-    const [safeZones, setSafeZones] = useState<any[]>([]);
-    const [selectedZone, setSelectedZone] = useState<any[]>([]);
+    const [safeZones, setSafeZones] = useState<SafeZone[]>([]);
+    const [selectedZone, setSelectedZone] = useState<SafeZone | null>(null);
     const [zonepopoverCoords, setZonePopoverCoords] = useState<[number, number] | null>(null);
     const [zonepopupVisible, setZonePopupVisible] = useState(false);
     const [zoneName, setZoneName] = useState("");
