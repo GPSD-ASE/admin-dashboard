@@ -32,7 +32,7 @@ const GridComponent = () => {
   const [rowData, setRowData] = useState<any[]>([]);
   const [popupData, setPopupData] = useState<any>(null);
   const [popupVisible, setPopupVisible] = useState(false);
-  const [incidentStatus, setIncidentStatus] = useState<String>("");
+  const [incidentStatus, setIncidentStatus] = useState<string>("");
 
   useEffect(() => {
     populateGrid();
